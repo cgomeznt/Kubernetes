@@ -14,9 +14,9 @@ nodos que utilizan el comando "kubeadm" y "kubectl".
 
 El clúster de Kubernetes es altamente configurable. Muchos de sus componentes son opcionales. Nuestro despliegue consiste
 de los siguientes componentes: 
-** Kubernetes
-** Etcd
-** Docker
-** Flannel Network
-** Dashboard
-** Heapster.
+	** Kubernetes
+	** Etcd
+	** Docker
+	** Flannel Network
+	** Dashboard
+	** Heapster.
