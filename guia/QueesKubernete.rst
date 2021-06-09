@@ -97,7 +97,10 @@ Instalar Docker CE.::
 	# yum list --showduplicates docker-ce --disableexcludes=docker-ce
 	# yum update && yum install containerd.io-1.2.10 docker-ce-19.03.5 docker-ce-cli-19.03.5
 
-Crear el directorio de /etc/docker::
+
+Cambiar el CgroupDrive al docker para que sea Systemd
+
+Crear el directorio de /etc/docker si no existe::
 
 	# mkdir /etc/docker
 
@@ -119,12 +122,28 @@ Configurar el servicio o daemon.::
 
 	# mkdir -p /etc/systemd/system/docker.service.d
 
+Lo de arriba es para cambiar el cgroupdrive al docker tal como lo recomienda Kubernetes, pero no me funciono.
+Ejecute esto y sip me funciono, editar el::
+
+	vi /usr/lib/systemd/system/docker.service
+	ExecStart=/usr/bin/dockerd --exec-opt native.cgroupdriver=systemd
+
+	systemctl daemon-reload
+
+	systemctl restart docker
+
+y cuando consulta el systemctl status docker se puede ver 21036 /usr/bin/dockerd --exec-opt native.cgroupdriver=systemd
+
 Reiniciar Docker::
 
 	systemctl daemon-reload
 	systemctl restart docker
 	systemctl enable docker
 	systemctl status docker
+
+Consultamos el cgroupfs de docker y vemos que ya esta bien::
+
+	# docker info | grep -i cgroup
 
 Probar Docker::
 
@@ -138,8 +157,7 @@ Probar Docker::
 	baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
 	enabled=1
 	gpgcheck=1
-	repo_gpgcheck=1gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-
-	package-key.gpg
+	repo_gpgcheck=1gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
 	EOF
 
 Esto es opcional, si ya deshabilito SELinux esto no es necesario, SELinux in permissive mode (effectively disabling it)::
@@ -158,6 +176,16 @@ Reiniciamos el Kubernete::
 	systemctl enable --now kubelet
 	systemctl start kubelet
 
+Si te fijas el kubelet no inicia, esta con errores, pero luego de inicializar el cluster de kubernete con kubeadm init, se corrige.
+
+No olviden ejecutar, para que puedas ver las consulta del cluster o de los nodos con 
+
+	# kubectl cluster-info
+	
+	# kubectl get nodes
+
+	export KUBECONFIG=/etc/kubernetes/admin.conf
+
 10) Crear el archivo /etc/sysctl.d/k8s.conf con el siguiente contenido y luego ejecutar el comando sysctl -p /etc/sysctl.d/k8s.conf::
 
 	# vim /etc/sysctl.d/k8s.conf
@@ -171,14 +199,16 @@ Reiniciamos el Kubernete::
 
 ######
 lsmod | grep br_netfilter . To load it explicitly call modprobe br_netfilter “
+modprobe br_netfilter
+echo '1' > /proc/sys/net/bridge/bridge-nf-call-iptables
+lsmod | grep br_netfilter . To load it explicitly call modprobe br_netfilter “
+No es necesario, solo validar.
 ##### 
 
-No es necesario, solo validar.::
+::
 
-	# docker info | grep -i cgroup
-	# docker run hello-world
 
-Completar comando docker kubeadm kubectl::
+Completar en bash los comandos docker kubeadm kubectl::
 
 	# yum install bash-completion
 	source /usr/share/bash-completion/bash_completion
