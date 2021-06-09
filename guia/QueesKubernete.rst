@@ -1,5 +1,5 @@
 Cómo implementar un clúster HA Kubernetes con kubeadm en CentOS7
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+===========================
 
 ESTE DOCUMENTO esta aun en diseño
 
@@ -15,8 +15,7 @@ Los nodos de clúster se conocen como **Worker Nodes** o **Minion**. Desde el no
 nodos que utilizan el comando "kubeadm" y "kubectl".
 
 
-El clúster de Kubernetes es altamente configurable. Muchos de sus componentes son opcionales. Nuestro despliegue consiste
-de los siguientes componentes: 
+El clúster de Kubernetes es altamente configurable. Muchos de sus componentes son opcionales. Nuestro despliegue consiste de los siguientes componentes: 
 	** Kubernetes
 	** Etcd
 	** Docker
@@ -25,7 +24,7 @@ de los siguientes componentes:
 	** Heapster
 
 Arquitectura
-============
+++++++++++++
 
 Server Name	IP Address	Role
 k8-master01	192.168.20.20	Master Node
@@ -38,7 +37,7 @@ k8-registry01	192.168.20.27	Registry Images
 
 
 Preparando los servidores
-=======================
++++++++++++++++++++++++++++
 
 Hay algunas cosas que se deben hacer para preparar los servidores. Necesitas realizar la siguiente tarea en todos los server (Master and Worker)
 
