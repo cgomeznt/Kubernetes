@@ -156,13 +156,15 @@ Probar Docker::
 	baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
 	enabled=1
 	gpgcheck=1
-	repo_gpgcheck=1gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+	repo_gpgcheck=1gpg
+	key=https://packages.cloud.google.com/yum/doc/yum-key.gpg 
+		https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
 	EOF
 
-Esto es opcional, si ya deshabilito SELinux esto no es necesario, SELinux in permissive mode (effectively disabling it)::
+Si ya deshabilito SELinux esto no es necesario, SELinux in permissive mode (effectively disabling it)::
 
 	# setenforce 0
-	# sed -i 's/^SELINUX=enforcing$/SELINUX=permissive/' /etc/selinux/config
+	# sed -i -e 's/^SELINUX=enforcing$/SELINUX=disabled/' /etc/selinux/config
 
 Proceso de instalación de las herramientas de Kube::
 
