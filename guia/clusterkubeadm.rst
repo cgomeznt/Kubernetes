@@ -29,10 +29,10 @@ Como estará configurado el laboratorio
 +---------------+-----------------------+-----------------------+
 
 
-Preparando los servidores
+Preparando todos los servidores
 ========================
 
-Hay algunas configuraciones previas que se deben realizar en los servidores.
+Hay algunas configuraciones previas que se deben realizar en cada uno de los servidores de igual forma.
 
 Deshabilitar Selinux
 +++++++++++++++++++++
@@ -70,13 +70,13 @@ Cambiar los Hostname de cada uno de los servidores
 +++++++++++++++++++++++++++++++++++++++++++
 En cada uno de los servidores coloque el mismo nombre como lo coloco en el archivo /etc/hosts::
 
-	hostnamectl set-hostname k8master01
+	# hostnamectl set-hostname k8master01
 	
-	hostnamectl set-hostname k8master02
+	# hostnamectl set-hostname k8master02
 	
-	hostnamectl set-hostname k8master03
-	
-	hostnamectl set-hostname k8worker01
+	# hostnamectl set-hostname k8master03
+	 
+	# hostnamectl set-hostname k8worker01
 
 Reiniciar servidores y verificar selinux
 ++++++++++++++++++++++++++++++++++++++++++++
@@ -95,7 +95,6 @@ Reiniciar servidores y verificar selinux
 
 
 
-
 Instalar NTP
 ++++++++++++++++
 ::
@@ -110,6 +109,7 @@ Establecer la timezone
 
 	# timedatectl set-timezone America/Caracas
 
+
 Instalar Docker
 ++++++++++++++++
 
@@ -117,27 +117,27 @@ La mejor documentación es la oficial de Docker https://docs.docker.com/engine/i
 
 Esto es como instalar Docker::
 
-	yum install -y yum-utils
+	# yum install -y yum-utils
 
-	yum-config-manager --add-repo  https://download.docker.com/linux/centos/docker-ce.repo
+	# yum-config-manager --add-repo  https://download.docker.com/linux/centos/docker-ce.repo
 
-	yum install docker-ce docker-ce-cli containerd.io
+	# yum install docker-ce docker-ce-cli containerd.io
 
 
 Cambiar el cgroupdrive al docker de init a systemd, tal como lo recomienda Kubernetes::
 
 
-	vi /usr/lib/systemd/system/docker.service
+	# vi /usr/lib/systemd/system/docker.service
 	ExecStart=/usr/bin/dockerd --exec-opt native.cgroupdriver=systemd
 
 
 Recargamos el servicio, lo habilitamos y lo iniciamos::
 
-	systemctl daemon-reload
+	# systemctl daemon-reload
 
-	systemctl enable docker
+	# systemctl enable docker
 
-	systemctl restart docker
+	# systemctl restart docker
 
 Docker para Kubernetes debe tener el Storage Drive de overlay2. Para saber si Docker es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ta utilizando el Driver de overlay2::
 
@@ -248,7 +248,7 @@ Instalar kubelet, kubeadm, kubectl
 ++++++++++++++++++++++++++++++++
 ::
 
-	cat <<EOF > /etc/yum.repos.d/kubernetes.repo
+	# cat <<EOF > /etc/yum.repos.d/kubernetes.repo
 	[kubernetes]
 	name=Kubernetes
 	baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
@@ -260,22 +260,22 @@ Instalar kubelet, kubeadm, kubectl
 
 Listamos todas las versiones de kubeadm, kubelet, kubectl, por si queremos escoger una en particular::
 
-	yum list --showduplicates kubeadm --disableexcludes=kubernetes
+	# yum list --showduplicates kubeadm --disableexcludes=kubernetes
 	
-	yum list --showduplicates kubelet --disableexcludes=kubernetes
+	# yum list --showduplicates kubelet --disableexcludes=kubernetes
 	
-	yum list --showduplicates kubectl --disableexcludes=kubernetes
+	# yum list --showduplicates kubectl --disableexcludes=kubernetes
 	
 Instalamos los paquetes kubeadm, kubelet, kubectl y en este ejemplo utilizamos la versión 1.19.15-0::
 
-	yum install -y kubeadm-1.19.15-0  kubectl-1.19.15-0  kubelet-1.19.15-0  --disableexcludes=kubernetes
+	# yum install -y kubeadm-1.19.15-0  kubectl-1.19.15-0  kubelet-1.19.15-0  --disableexcludes=kubernetes
 	
 
 Solo habilitamos el servicio kubelet, NO se debe iniciar porque sino tendrá errores::
 
-	systemctl daemon-reload
+	# systemctl daemon-reload
 	
-	systemctl enable --now kubelet
+	# systemctl enable --now kubelet
 
 
 Completar comando docker kubeadm kubectl
@@ -283,7 +283,7 @@ Completar comando docker kubeadm kubectl
 
 Esto consume muchos recursos en el bash, solo se debería bajo una evaluación::
 
-	yum install bash-completion
+	# yum install bash-completion
 	source /usr/share/bash-completion/bash_completion
 	Desloguea y vuelve a ingresar al perfil. Prueba con:
 	type _init_completion
