@@ -25,6 +25,8 @@ El servidor de API es un componente de Control Plane de Kubernetes que expone la
 
 La implementación principal de un servidor API de Kubernetes es kube-apiserver. kube-apiserver está diseñado para escalar horizontalmente, es decir, escala mediante la implementación de más instancias. Puede ejecutar varias instancias de kube-apiserver y equilibrar el tráfico entre esas instancias.
 
+La API es la que atiende las solicitudes enviadas por la interfaz humana cuando escribe un comando. Esta API es capaz de interpretar los comando y acepta request en formato JSON, es decir a nivel de programación podemos comunicarnos con esta API. En resumen la API habla es en JSON.
+
 **etcd**
 Almacén de claves consistente y de alta disponibilidad, utilizado como almacén de respaldo de Kubernetes para todos los datos del clúster. Aquí se almacena toda la metadata del cluster.
 
@@ -88,7 +90,7 @@ kube-proxy es un proxy de red que se ejecuta en cada nodo en su clúster, parte 
 
 kube-proxy mantiene las reglas de red en los nodos. Estas reglas de red permiten la comunicación de red con sus pods desde sesiones de red dentro o fuera de su clúster.
 
-kube-proxy usa la capa de filtrado de paquetes del sistema operativo si hay una y está disponible. De lo contrario, kube-proxy reenvía el tráfico en sí.
+kube-proxy usa la capa de filtrado de paquetes del sistema operativo si hay una y está disponible. De lo contrario, kube-proxy reenvía el tráfico en sí. Se encarga de todo el servicio de Red del Cluster de Kubernetes.
 
 **Container runtime**
 El Container runtime es el software responsable de ejecutar los contenedores.
