@@ -3,6 +3,9 @@ Cluster Kubernetes con kubeadm en CentOS7
 
 https://www.kubeclusters.com/docs/How-to-Deploy-a-Highly-Available-kubernetes-Cluster-with-Kubeadm-on-CentOS7
 
+https://dockerlabs.collabnix.com/kubernetes/beginners/Install-and-configure-a-multi-master-Kubernetes-cluster-with-kubeadm.html
+
+
 Kubernetes es un orquestador para contenedores de Docker. En otras palabras, Kubernetes es un software o herramienta de código abierto que se utiliza para organizar y administrar contenedores de Docker en clúster ambiente. Kubernetes también se conoce como k8s y fue desarrollado por Google y donado a "Cloud Native Computing foundation”
 
 En Kubernetes con configuración ETCD, tenemos al menos tres (3) nodos Master y varios nodos Worker. Los nodos de clúster se conocen como nodo Worker o Minion. Desde el nodo Master gestionamos el clúster y su nodos que utilizan el comando "kubeadm" y "kubectl".
@@ -293,7 +296,7 @@ Esto consume muchos recursos en el bash, solo se debería bajo una evaluación::
 Crear certificados (ejecutar en todos los nodos)
 ++++++++++++++++++++++++++++++++++++++++++++++++++
 
-Vamos a descargar los PKI and TLS toolkit::
+Vamos a descargar los PKI and TLS toolkit. Cloud Flare SSL tool genera los diferentes certificados, Kubernetes client, kubectl, para manejar el Kubernetes cluster::
 
 	# curl -o /usr/local/bin/cfssl https://pkg.cfssl.org/R1.2/cfssl_linux-amd64
 
@@ -301,9 +304,22 @@ Vamos a descargar los PKI and TLS toolkit::
 
 	# chmod +x /usr/local/bin/cfssl*
 
-	# mkdir -p /etc/kubernetes/pki/etcd && cd /etc/kubernetes/pki/etcd
 	
-	
+Verificamos la instalación y que versión es::
+
+	$ cfssl version
 
 **Hasta aquí es igual tanto para Master como para Workers**
+
+Instalar y configurar Etcd (Todos los Master)
++++++++++++++++++++++++++++++++++++++++++++++
+
+etcd es un almacén de valores clave coherente y de alta disponibilidad que se utiliza como almacén de respaldo de Kubernetes para todos los datos del clúster. 
+
+Si su clúster de Kubernetes usa etcd como su almacén de respaldo, asegúrese de tener un plan de respaldo para esos datos. https://kubernetes.io/docs/tasks/administer-cluster/configure-upgrade-etcd/#backing-up-an-etcd-cluster
+
+Puede encontrar información detallada sobre etcd en la documentación oficial.
+El numero minimo de nodos es tres (3)
+
+	# mkdir -p /etc/kubernetes/pki/etcd && cd /etc/kubernetes/pki/etcd
 
