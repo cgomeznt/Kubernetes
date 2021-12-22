@@ -13,7 +13,7 @@ El clúster de Kubernetes es altamente configurable. Muchos de sus componentes s
 Como estará configurado el laboratorio
 ++++++++++++++++++++++++++++++++++++++++
 
-
+----------------------------------------------------------------
 Server Name		IP Address		Role
 
 k8-master01		192.168.1.20		Master Node
@@ -52,6 +52,28 @@ Deshabilitar firewalld
 	# systemctl stop firewalld
 	# systemctl disable firewalld
 
+Editar el archivo /etc/hosts
++++++++++++++++++++++++++++++++
+::
+
+	# vi  /etc/hosts
+
+	192.168.1.20    k8master01
+	192.168.1.21    k8master02
+	192.168.1.22    k8master03
+	192.168.1.23    k8worker01
+	
+Cambiar los Hostname de cada uno de los servidores
++++++++++++++++++++++++++++++++++++++++++++
+En cada uno de los servidores coloque el mismo nombre como lo coloco en el archivo /etc/hosts::
+
+	hostnamectl set-hostname k8master01
+	
+	hostnamectl set-hostname k8master02
+	
+	hostnamectl set-hostname k8master03
+	
+	hostnamectl set-hostname k8worker01
 
 Reiniciar servidores y verificar selinux
 ++++++++++++++++++++++++++++++++++++++++++++
@@ -69,16 +91,7 @@ Reiniciar servidores y verificar selinux
 	     Docs: man:firewalld(1)
 
 
-Editar el archivo /etc/hosts
-+++++++++++++++++++++++++++++++
-::
 
-	# vi  /etc/hosts
-
-	192.168.1.20    k8master01
-	192.168.1.21    k8master02
-	192.168.1.22    k8master03
-	192.168.1.23    k8worker01
 
 Instalar NTP
 ++++++++++++++++
@@ -123,7 +136,7 @@ Recargamos el servicio, lo habilitamos y lo iniciamos::
 
 	systemctl restart docker
 
-Docker para Kubernetes debe tener el Storage Drive de overlay2. Para saber si Docker esta utilizando el Driver de overlay2::
+Docker para Kubernetes debe tener el Storage Drive de overlay2. Para saber si Docker es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ta utilizando el Driver de overlay2::
 
 	# docker info | grep Storage
 	 Storage Driver: overlay2
