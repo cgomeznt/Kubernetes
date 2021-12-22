@@ -13,8 +13,9 @@ El clúster de Kubernetes es altamente configurable. Muchos de sus componentes s
 Como estará configurado el laboratorio
 ++++++++++++++++++++++++++++++++++++++++
 
+
 +----------------+------------------------+----------------------+
-|Server Name		IP Address		Role		|
+|Server Name	|IP Address		|Role			|
 +----------------+------------------------+----------------------+
 |k8-master01	|192.168.1.20		|Master Node		|
 |		|			|			|
@@ -26,6 +27,8 @@ Como estará configurado el laboratorio
 |		|			|			|
 |k8-registry01	|			|			|
 +----------------+------------------------+----------------------+
+
+
 Preparando los servidores
 ========================
 
