@@ -15,10 +15,15 @@ Como estará configurado el laboratorio
 
 
 Server Name		IP Address		Role
+
 k8-master01		192.168.1.20		Master Node
+
 k8-master02		192.168.1.21		Master Node
+
 k8-master03		192.168.1.22		Master Node
+
 k8-worker01		192.168.1.30		Worker Node
+
 k8-registry01
 
 Preparando los servidores
