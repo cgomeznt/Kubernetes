@@ -139,7 +139,7 @@ Recargamos el servicio, lo habilitamos y lo iniciamos::
 
 	# systemctl restart docker
 
-Docker para Kubernetes debe tener el Storage Drive de overlay2. Para saber si Docker es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ta utilizando el Driver de overlay2::
+Docker para Kubernetes debe tener el Storage Drive de overlay2. Para saber si Docker esta utilizando el Driver de overlay2::
 
 	# docker info | grep Storage
 	 Storage Driver: overlay2
