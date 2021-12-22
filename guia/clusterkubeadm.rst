@@ -99,11 +99,13 @@ Instalar Docker
 
 La mejor documentación es la oficial de Docker https://docs.docker.com/engine/install/
 
-yum install -y yum-utils
+Esto es como instalar Docker::
 
-yum-config-manager --add-repo  https://download.docker.com/linux/centos/docker-ce.repo
+	yum install -y yum-utils
 
-yum install docker-ce docker-ce-cli containerd.io
+	yum-config-manager --add-repo  https://download.docker.com/linux/centos/docker-ce.repo
+
+	yum install docker-ce docker-ce-cli containerd.io
 
 
 Cambiar el cgroupdrive al docker de init a systemd, tal como lo recomienda Kubernetes::
@@ -111,6 +113,9 @@ Cambiar el cgroupdrive al docker de init a systemd, tal como lo recomienda Kuber
 
 	vi /usr/lib/systemd/system/docker.service
 	ExecStart=/usr/bin/dockerd --exec-opt native.cgroupdriver=systemd
+
+
+Recargamos el servicio, lo habilitamos y lo iniciamos::
 
 	systemctl daemon-reload
 
@@ -146,6 +151,7 @@ Hay un bug con  CentOS 7, XFS y el soporte d_type. El soporte d_type debe estar 
 
 
 
+Para más detalle de XFS y d_type ver estos link::
 
 	https://www.thegeekdiary.com/how-to-create-an-xfs-filesystem/
 
@@ -203,6 +209,7 @@ Realizamos una prueba de Docker::
 Crear el archivo /etc/sysctl.d/k8s.conf con el siguiente contenido y luego ejecutar el comando
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+::
 
 	# vi /etc/sysctl.d/k8s.conf
 	vm.dirty_expire_centisecs = 500
