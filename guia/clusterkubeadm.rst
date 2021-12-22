@@ -139,16 +139,16 @@ Recargamos el servicio, lo habilitamos y lo iniciamos::
 
 	# systemctl restart docker
 
-Docker para Kubernetes debe tener el Storage Drive de overlay2. Para saber si Docker esta utilizando el Driver de overlay2::
-
-	# docker info | grep Storage
-	 Storage Driver: overlay2
-
 Nos aseguramos que Cgroup Driver sea  systemd::
 
 	# docker info | grep -i cgroup
 	 Cgroup Driver: systemd
 	 Cgroup Version: 1
+	 
+Docker para Kubernetes debe tener el Storage Drive de overlay2. Para saber si Docker esta utilizando el Driver de overlay2::
+
+	# docker info | grep Storage
+	 Storage Driver: overlay2
 
 Hay un bug con  CentOS 7, XFS y el soporte d_type. El soporte d_type debe estar habilitado en el filesystem de XFS, ver los siguientes link, por ejemplo, en donde tenga instalado Docker, en este ejemplo esta en /var/docker::
 
@@ -172,8 +172,6 @@ Para más detalle de XFS y d_type ver estos link::
 	https://www.thegeekdiary.com/how-to-create-an-xfs-filesystem/
 
 	https://medium.com/@khushalbisht/docker-on-centos-7-with-xfs-filesystem-can-cause-trouble-when-d-type-is-not-supported-64cee61b39ab
-
-
 
 
 Verificamos el status de Docker ::
