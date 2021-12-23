@@ -321,5 +321,504 @@ Si su clúster de Kubernetes usa etcd como su almacén de respaldo, asegúrese d
 Puede encontrar información detallada sobre etcd en la documentación oficial.
 El numero minimo de nodos es tres (3)
 
+Prepara el area de trabajo de etcd (Todos los Master)
+++++++++++++++++++++++++++++++++++++
+::
+
 	# mkdir -p /etc/kubernetes/pki/etcd && cd /etc/kubernetes/pki/etcd
 
+Crear la ca y su csr para los certificados (En el Master01)
+++++++++++++++++++++++++++++++++++++++++++++
+
+Crear los archivos **ca-config.json** y **ca-csr.json** en /etc/kubernetes/pki/etcd para crear los certificados::
+
+	# vi ca-config.json
+	{
+	"signing": {
+	"default": {
+	"expiry": "43800h"
+	},
+	"profiles": {
+	"server": {
+	"expiry": "43800h",
+	"usages": [
+	"signing",
+	"key encipherment",
+	"server auth",
+	"client auth"
+	]
+	},
+	"client": {
+	"expiry": "43800h",
+	"usages": [
+	"signing",
+	"key encipherment",
+	"client auth"
+	]
+	},
+	"peer": {
+	"expiry": "43800h",
+	"usages": [
+	"signing",
+	"key encipherment",
+	"server auth",
+	"client auth"
+	]
+	}
+	}
+	}
+	}
+
+::
+
+	# vi ca-csr.json
+	{
+	"CN": "etcd",
+	"key": {
+	"algo": "rsa",
+	"size": 2048
+	}
+	}
+
+Generar los certificados (En el Master01)
+++++++++++++++++++++++
+::
+
+	# cd /etc/kubernetes/pki/etcd
+	# /usr/local/bin/cfssl gencert -initca ca-csr.json | /usr/local/bin/cfssljson -bare ca -
+
+Al ejecutar el comando se generan 3 archivos en /etc/kubernetes/pki/etcd::
+
+	ca.pem
+	ca-key.pem
+	ca.csr
+
+
+Crear el archivo de configuración para el certificado cliente. (En el Master01)
+++++++++++++++++++++++++++++++++++
+
+Para esto crear el archivo /etc/kubernetes/pki/etcd/client.json con el siguiente contenido::
+
+	client.json
+	{
+	"CN": "client",
+	"key": {
+	"algo": "ecdsa",
+	"size": 256
+	}
+	}
+
+Crear el certificado cliente (En el Master01) 
+++++++++++++++++++++++++++++++++++++++++++++++
+
+En /etc/kubernetes/pki/etcd ejecutar::
+
+	# /usr/local/bin/cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -profile=client client.json | /usr/local/bin/cfssljson -bare client
+
+
+Al ejecutar el comando se generan 3 archivos en /etc/kubernetes/pki/etcd::
+
+	client.csr
+	client-key.pem
+	client.pem
+
+Copiar los certificados (A todos los Master)
++++++++++++++++++++++++++++++++++++++++++++
+
+En el resto de los nodos Master, copiar en la carpeta /etc/kubernetes/pki/etcd los siguientes archivos desde el Master01::
+
+	ca.pem
+	ca-key.pem
+	client.pem
+	client-key.pem
+	ca-config.json
+
+Los copiamos así::
+
+	scp ca.pem ca-key.pem client.pem client-key.pem ca-config.json root@192.168.1.21:/etc/kubernetes/pki/etcd/
+	scp ca.pem ca-key.pem client.pem client-key.pem ca-config.json root@192.168.1.22:/etc/kubernetes/pki/etcd/ 
+
+Crear el archivo de configuración config.json (En todos los Master)
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+En cada nodo master ejecutar los siguientes comandos::
+
+	# /usr/local/bin/cfssl print-defaults csr > /etc/kubernetes/pki/etcd/config.json
+
+Este comando genera el archivo config.json en /etc/kubernetes/pki/etcd::
+
+	config.json
+	{
+	"CN": "example.net",
+	"hosts": [
+	"example.net",
+	"www.example.net"
+	],"key": {
+	"algo": "ecdsa",
+	"size": 256
+	},
+	"names": [
+	{
+	"C": "US",
+	"L": "CA",
+	"ST": "San Francisco"
+	}
+	]
+	}
+
+En cada nodo de los Master vamos a ejecutar lo siguiente para que el archivo **config.json** quede con los valores correspondientes::
+
+	# export PRIVATE_IP=$(ip addr show ens160 | grep -Po 'inet \K[\d.]+') && export PEER_NAME=$(hostname)
+	# sed -i '0,/CN/{s/example\.net/'"$PEER_NAME"'/}' /etc/kubernetes/pki/etcd/config.json
+	# sed -i 's/www\.example\.net/'"$PRIVATE_IP"'/' /etc/kubernetes/pki/etcd/config.json
+	# sed -i 's/example\.net/'"$PEER_NAME"'/' /etc/kubernetes/pki/etcd/config.json
+
+El objetivo de los comandos anteriores es configurar el archivo config.json con la ip y nombre del nodo master.
+
+Luego edite manualmente el archivo config.json (C: país, L: estado, ST: ciudad) según su ubicación.::
+
+	# vi config.json
+	{
+	"CN": "k8master01",
+	"hosts": [
+	"k8master01",
+	"192.168.1.20"
+	],
+	"key": {
+	"algo": "ecdsa",
+	"size": 256
+	},
+	"names": [
+	{
+	"C": "VE",
+	"L": "DC",
+	"ST": "CCS"
+	}
+	]
+	}
+
+Crear los certificados de Server y Peer (En todos los Master)
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Esto se debe ejecutar en cada uno de los Master en la siguiente ruta /etc/kubernetes/pki/etcd/::
+
+	/usr/local/bin/cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -profile=server config.json | /usr/local/bin/cfssljson -bare server
+
+El comando anterior genera los siguientes archivos en /etc/kubernetes/pki/etcd::
+
+	server.csr
+	server-key.pem
+	server.pem
+
+Esto se debe ejecutar en cada uno de los Master en la siguiente ruta /etc/kubernetes/pki/etcd/::
+
+	/usr/local/bin/cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -profile=peer config.json | /usr/local/bin/cfssljson -bare peer
+
+El comando anterior genera los siguientes archivos en /etc/kubernetes/pki/etcd::
+
+	peer.csr
+	peer-key.pem
+	peer.pem
+
+Instalar y configurar ETCD (En todos los Master)
+++++++++++++++++++++++++++++++++++++++++++++++++
+
+::
+	# yum -y install etcd
+	# touch /etc/etcd.env
+	# export PRIVATE_IP=$(ip addr show eth0 | grep -Po 'inet \K[\d.]+') && export PEER_NAME=$(hostname)
+	# echo "PEER_NAME=${PEER_NAME}" >> /etc/etcd.env
+	# echo "PRIVATE_IP=${PRIVATE_IP}" >> /etc/etcd.env
+
+El objetivo de los comandos anteriores es instalar etcd y crear el archivo /etc/etcd.env con los
+valores PEER_NAME y PRIVATE_IP en los nodos master. Lo consultamos en cada uno de los Master y debe tener los datos de cada uno de ellos::
+
+	cat /etc/etcd.env
+	PEER_NAME=k8master01
+	PRIVATE_IP=192.168.1.20
+
+Configuración de variables de entorno para la administración básica de ETCD (ETCDCTL) en los tres (3) masters (todos), crear el archivo /etc/profile.d/etcd.sh con el siguiente contenido::
+
+	vi /etc/profile.d/etcd.sh
+
+	export ETCDCTL_CERT=/etc/kubernetes/pki/etcd/client.pem
+	export ETCDCTL_KEY=/etc/kubernetes/pki/etcd/client-key.pem
+	export ETCDCTL_CACERT=/etc/kubernetes/pki/etcd/ca.pem
+	export ETCDCTL_ENDPOINTS=https://192.168.1.20:2379,https://192.168.1.21:2379,https://192.168.1.22:2379
+	export ETCDCTL_API=3
+
+Iniciamos todas las variables::
+
+# source /etc/profile.d/etcd.sh
+
+En cada nodo master generar el archivo etcd.service en /etc/systemd/system/ con el siguiente contenido:
+
+En el Master01::
+
+	# vi /etc/systemd/system/etcd.service
+
+	[Unit]
+	Description=etcd
+	Documentation=https://github.com/coreos/etcd
+	Conflicts=etcd.service
+	Conflicts=etcd2.service
+	[Service]
+	EnvironmentFile=/etc/etcd.env
+	Type=notify
+	Restart=always
+	RestartSec=5s
+	LimitNOFILE=40000
+	TimeoutStartSec=0
+	ExecStart=/usr/bin/etcd \
+	--name=k8master01 \
+	--data-dir=/var/lib/etcd \
+	--listen-client-urls=https://192.168.1.20:2379 \
+	--advertise-client-urls=https://192.168.1.20:2379 \
+	--listen-peer-urls=https://192.168.1.20:2380 \
+	--initial-advertise-peer-urls=https://192.168.1.20:2380 \
+	--cert-file=/etc/kubernetes/pki/etcd/server.pem \
+	--key-file=/etc/kubernetes/pki/etcd/server-key.pem \
+	--client-cert-auth \
+	--trusted-ca-file=/etc/kubernetes/pki/etcd/ca.pem \
+	--peer-cert-file=/etc/kubernetes/pki/etcd/peer.pem \
+	--peer-key-file=/etc/kubernetes/pki/etcd/peer-key.pem \
+	--peer-client-cert-auth --peer-trusted-ca-file=/etc/kubernetes/pki/etcd/ca.pem \
+	--initial-cluster=k8master01=https://192.168.1.20:2380,k8master02=https://192.168.1.21:2380,k8master03=https://192.168.1.22:2380 \
+	--initial-cluster-token my-etcd-token \
+	--initial-cluster-state new
+	[Install]
+	WantedBy=multi-user.target
+
+En el Master02::
+
+	# vi /etc/systemd/system/etcd.service
+
+	[Unit]
+	Description=etcd
+	Documentation=https://github.com/coreos/etcd
+	Conflicts=etcd.service
+	Conflicts=etcd2.service
+	[Service]
+	EnvironmentFile=/etc/etcd.env
+	Type=notify
+	Restart=always
+	RestartSec=5s
+	LimitNOFILE=40000
+	TimeoutStartSec=0
+	ExecStart=/usr/bin/etcd \
+	--name=k8master02 \
+	--data-dir=/var/lib/etcd \
+	--listen-client-urls=https://192.168.1.21:2379 \
+	--advertise-client-urls=https://192.168.1.21:2379 \
+	--listen-peer-urls=https://192.168.1.21:2380 \
+	--initial-advertise-peer-urls=https://192.168.1.21:2380 \
+	--cert-file=/etc/kubernetes/pki/etcd/server.pem \
+	--key-file=/etc/kubernetes/pki/etcd/server-key.pem \
+	--client-cert-auth \
+	--trusted-ca-file=/etc/kubernetes/pki/etcd/ca.pem \
+	--peer-cert-file=/etc/kubernetes/pki/etcd/peer.pem \
+	--peer-key-file=/etc/kubernetes/pki/etcd/peer-key.pem \
+	--peer-client-cert-auth --peer-trusted-ca-file=/etc/kubernetes/pki/etcd/ca.pem \
+	--initial-cluster=k8master01=https://192.168.1.20:2380,k8master02=https://192.168.1.21:2380,k8master03=https://192.168.1.22:2380 \
+	--initial-cluster-token my-etcd-token \
+	--initial-cluster-state new
+	[Install]
+	WantedBy=multi-user.target
+
+
+
+En el Master03::
+
+	# vi /etc/systemd/system/etcd.service
+
+	[Unit]
+	Description=etcd
+	Documentation=https://github.com/coreos/etcd
+	Conflicts=etcd.service
+	Conflicts=etcd2.service
+	[Service]
+	EnvironmentFile=/etc/etcd.env
+	Type=notify
+	Restart=always
+	RestartSec=5s
+	LimitNOFILE=40000
+	TimeoutStartSec=0
+	ExecStart=/usr/bin/etcd \
+	--name=k8master03 \
+	--data-dir=/var/lib/etcd \
+	--listen-client-urls=https://192.168.1.22:2379 \
+	--advertise-client-urls=https://192.168.1.22:2379 \
+	--listen-peer-urls=https://192.168.1.22:2380 \
+	--initial-advertise-peer-urls=https://192.168.1.22:2380 \
+	--cert-file=/etc/kubernetes/pki/etcd/server.pem \
+	--key-file=/etc/kubernetes/pki/etcd/server-key.pem \
+	--client-cert-auth \
+	--trusted-ca-file=/etc/kubernetes/pki/etcd/ca.pem \
+	--peer-cert-file=/etc/kubernetes/pki/etcd/peer.pem \
+	--peer-key-file=/etc/kubernetes/pki/etcd/peer-key.pem \
+	--peer-client-cert-auth --peer-trusted-ca-file=/etc/kubernetes/pki/etcd/ca.pem \
+	--initial-cluster=k8master01=https://192.168.1.20:2380,k8master02=https://192.168.1.21:2380,k8master03=https://192.168.1.22:2380 \
+	--initial-cluster-token my-etcd-token \
+	--initial-cluster-state new
+	[Install]
+	WantedBy=multi-user.target
+
+
+iniciar el servicio etcd (En todos los Master)
+++++++++++++++++++++++++++++++++++++++
+
+Ejecutar los siguientes comandos en cada nodo master, comenzando por el nodo k8master01 para iniciar el servicio etcd::
+
+	# systemctl daemon-reload && systemctl enable etcd
+	# systemctl start etcd
+
+
+Cuando se inicia el servicio con el comando start el master01 no emitirá respuesta hasta que algún otro nodo inicie el servicio etcd con el mismo comando start.::
+
+	# systemctl status etcd
+
+Verificar la salud del cluster ETCD
+++++++++++++++++++++++++++++++++
+
+Con el siguiente comando::
+
+	# etcdctl endpoint health
+
+Verificar los miembros del cluster ETCD
++++++++++++++++++++++++++++++++++++++++++++
+
+Con el siguiente comando::
+
+	# etcdctl member list
+
+Configuración de balanceo de ETCD
++++++++++++++++++++++++++++++++++++
+
+Configuracion del Cluster con kubeadm (En todos los Master)
++++++++++++++++++++++++++++++++++++++
+
+Se comienza con el Master01 (k8master01). Crear el directorio /etc/kubernetes/configuration y en el mismo directorio el archivo config.yaml Revisar la versión de kubernetes y colocar la correspondiente en el archivo config.yaml::
+
+	# mkdir /etc/kubernetes/configuration && cd /etc/kubernetes/configuration
+
+	# config.yaml
+
+	apiServer:
+	  certSANs:
+	  - 192.168.1.20
+	  extraArgs:
+	    apiserver-count: "3"
+	    authorization-mode: Node,RBAC
+	  timeoutForControlPlane: 4m0s
+	apiVersion: kubeadm.k8s.io/v1beta1
+	certificatesDir: /etc/kubernetes/pki
+	clusterName: kubernetes
+	controlPlaneEndpoint: ""
+	controllerManager: {}
+	dns:
+	  type: CoreDNS
+	etcd:
+	  external:
+	    caFile: /etc/kubernetes/pki/etcd/ca.pem
+	    certFile: /etc/kubernetes/pki/etcd/client.pem
+	    endpoints:
+	    - https://192.168.1.20:2379
+	    - https://192.168.1.21:2379
+	    - https://192.168.1.22:2379
+	    keyFile: /etc/kubernetes/pki/etcd/client-key.pem
+	imageRepository: k8s.gcr.io
+	kind: ClusterConfiguration
+	kubernetesVersion: v1.19.8
+	networking:
+	  dnsDomain: cluster.local
+	  podSubnet: 10.244.0.0/16
+	  serviceSubnet: 10.96.0.0/12
+	scheduler: {}
+
+Este archivo sera el mismo a utilizar en todos los Master, sin realizarle modificaciones.
+
+NOTA: Desde la version 1.16 debe actualizar el archivo config.yaml al formato nuevo. Ejecute el siguiente comando sobre el archivo antes generado.::
+
+	# kubeadm config migrate --old-config config.yaml --new-config config2.yaml
+
+Ejecutar el siguiente comando para aplicar lo configurado en el archivo config2.yaml::
+
+
+	# cd /etc/kubernetes/configuration
+
+	# kubeadm init --config=config2.yaml
+
+
+Tomar nota del token del cluster
+++++++++++++++++++++++++++++++++++++
+::
+
+	kubeadm join 192.168.20.20:6443 --token y7xngl.gw80syc54qulhe93 \
+	--discovery-token-ca-cert-hash
+	sha256:50204506d189e72ad8391996c739a04c2088f7e9a528f0c5210f26f524d7b2ec
+
+Ejecutar los siguientes comandos en el Master01 (k8master01)::
+
+	# mkdir -p $HOME/.kube && cp -i /etc/kubernetes/admin.conf $HOME/.kube/config && chown $(id -u):$(id -g) $HOME/.kube/config
+	# kubectl get pods -n kube-system
+	# kubectl get nodes
+
+Copiar en los nodos master 2 y 3 (k8master02, k8master03) en el directorio /etc/kubernetes/pki/ desde el Master01 los siguientes archivos::
+
+	/etc/kubernetes/pki/ca.crt
+	/etc/kubernetes/pki/ca.key
+	/etc/kubernetes/pki/sa.key
+	/etc/kubernetes/pki/sa.pub
+
+Con los siguientes comandos desde el Master01 (k8master01)::
+
+	# cd /etc/kubernetes/pki
+		
+	# scp ca.crt ca.key sa.key sa.pub root@192.168.1.21:/etc/kubernetes/pki
+
+	# scp ca.crt ca.key sa.key sa.pub root@192.168.1.21:/etc/kubernetes/pki
+
+De igual forma que el Master01, crear el directorio /etc/kubernetes/configuration en los nodos master 2 y 3 (k8master02, k8master03) y copiar el archivo config2.yaml desde el Master01 (k8master01):
+
+k8master02::
+
+	# mkdir /etc/kubernetes/configuration
+
+k8master03::
+
+	# mkdir /etc/kubernetes/configuration
+
+k8master01::
+
+	# cd /etc/kubernetes/configuration
+
+	# scp config2.yaml root@192.168.1.21:/etc/kubernetes/configuration/
+
+	# scp config2.yaml root@192.168.1.22:/etc/kubernetes/configuration/
+
+Ejecutar los siguientes comandos en los nodos master 2 y 3 (k8master02, k8master03) para iniciar kubeadm::
+
+	# kubeadm init --config=config2.yaml
+
+	# mkdir -p $HOME/.kube && cp -i /etc/kubernetes/admin.conf $HOME/.kube/config && chown $(id -u):$(id -g) $HOME/.kube/config
+
+Verificar en los tres (3) nodos master los pods de kubernetes ejecutando el siguiente comando::
+
+	# kubectl get pods -n kube-system
+
+
+Instalar la red de kubernetes “Flannel” (En el Master01)
+++++++++++++++++++++++++++++++++++++
+
+En el nodo 1 master (k8master01)::
+
+	# kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+
+Ejecutar el siguiente comando para verificar que los pods “coredns” tengan el status “running”::
+
+	# kubectl get pods -n kube-system
+
+Si el comando anterior se ejecuta desde los nodos master 2 y 3 el resultado debe ser el mismo.
+
+Unir los nodos workers al cluster con el comando JOIN
++++++++++++++++++++++++++++++++++++++++++++++++++++++++
