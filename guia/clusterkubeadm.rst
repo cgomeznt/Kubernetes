@@ -524,6 +524,7 @@ Instalar y configurar ETCD (En todos los Master)
 ++++++++++++++++++++++++++++++++++++++++++++++++
 
 ::
+
 	# yum -y install etcd
 	# touch /etc/etcd.env
 	# export PRIVATE_IP=$(ip addr show eth0 | grep -Po 'inet \K[\d.]+') && export PEER_NAME=$(hostname)
@@ -673,7 +674,7 @@ Ejecutar los siguientes comandos en cada nodo master, comenzando por el nodo k8m
 	# systemctl start etcd
 
 
-Cuando se inicia el servicio con el comando start el master01 no emitirá respuesta hasta que algún otro nodo inicie el servicio etcd con el mismo comando start.::
+Cuando se inicia el servicio con el comando start el master01 no emitirá respuesta hasta que algún otro nodo inicie el servicio etcd con el mismo comando start, es decir, se debe hacer simultáneamente en todos los Master::
 
 	# systemctl status etcd
 
@@ -701,7 +702,7 @@ Se comienza con el Master01 (k8master01). Crear el directorio /etc/kubernetes/co
 
 	# mkdir /etc/kubernetes/configuration && cd /etc/kubernetes/configuration
 
-	# config.yaml
+	# vi config.yaml
 
 	apiServer:
 	  certSANs:
@@ -737,7 +738,18 @@ Se comienza con el Master01 (k8master01). Crear el directorio /etc/kubernetes/co
 
 Este archivo sera el mismo a utilizar en todos los Master, sin realizarle modificaciones.
 
-NOTA: Desde la version 1.16 debe actualizar el archivo config.yaml al formato nuevo. Ejecute el siguiente comando sobre el archivo antes generado.::
+
+En el Master01 k8master01::
+
+	# cd /etc/kubernetes/configuration
+
+	# scp config.yaml root@192.168.1.21:/etc/kubernetes/configuration/
+
+	# scp config.yaml root@192.168.1.22:/etc/kubernetes/configuration/
+
+NOTA: Desde la version 1.16 debe actualizar el archivo config.yaml al formato nuevo. Ejecute el siguiente comando sobre el archivo antes generado.
+
+Ejecutar este comando en todos los Master sobre el config.yaml::
 
 	# kubeadm config migrate --old-config config.yaml --new-config config2.yaml
 
@@ -780,21 +792,6 @@ Con los siguientes comandos desde el Master01 (k8master01)::
 
 De igual forma que el Master01, crear el directorio /etc/kubernetes/configuration en los nodos master 2 y 3 (k8master02, k8master03) y copiar el archivo config2.yaml desde el Master01 (k8master01):
 
-k8master02::
-
-	# mkdir /etc/kubernetes/configuration
-
-k8master03::
-
-	# mkdir /etc/kubernetes/configuration
-
-k8master01::
-
-	# cd /etc/kubernetes/configuration
-
-	# scp config2.yaml root@192.168.1.21:/etc/kubernetes/configuration/
-
-	# scp config2.yaml root@192.168.1.22:/etc/kubernetes/configuration/
 
 Ejecutar los siguientes comandos en los nodos master 2 y 3 (k8master02, k8master03) para iniciar kubeadm::
 
