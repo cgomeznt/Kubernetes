@@ -804,9 +804,13 @@ Verificar en los tres (3) nodos master los pods de kubernetes ejecutando el sigu
 Instalar la red de kubernetes “Flannel” (En el Master01)
 ++++++++++++++++++++++++++++++++++++
 
-En el nodo 1 master (k8master01)::
+En el nodo 1 master (k8master01) ejecutar la instalacion de **Flannel**, este es el comando original, pero NO me funciono::
 
 	# kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+
+Utilice este otro comando y si me resulto::
+
+	# kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/2140ac876ef134e0ed5af15c65e414cf26827915/Documentation/kube-flannel.yml
 
 Ejecutar el siguiente comando para verificar que los pods “coredns” tengan el status “running”::
 
