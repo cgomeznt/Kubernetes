@@ -739,7 +739,7 @@ Se comienza con el Master01 (k8master01). Crear el directorio /etc/kubernetes/co
 Este archivo sera el mismo a utilizar en todos los Master, sin realizarle modificaciones.
 
 
-En el Master01 k8master01::
+En el Master01 k8master01 realizar la copia del archivo **config.yaml** al resto de los Master::
 
 	# cd /etc/kubernetes/configuration
 
@@ -747,13 +747,13 @@ En el Master01 k8master01::
 
 	# scp config.yaml root@192.168.1.22:/etc/kubernetes/configuration/
 
-NOTA: Desde la version 1.16 debe actualizar el archivo config.yaml al formato nuevo. Ejecute el siguiente comando sobre el archivo antes generado.
+**NOTA:** Desde la versión 1.16 debe actualizar el archivo config.yaml al formato nuevo. Ejecute el siguiente comando sobre el archivo antes generado.
 
-Ejecutar este comando en todos los Master sobre el config.yaml::
+Ejecutar este comando sobre el **config.yaml** en todos los Master::
 
 	# kubeadm config migrate --old-config config.yaml --new-config config2.yaml
 
-Ejecutar el siguiente comando para aplicar lo configurado en el archivo config2.yaml::
+En el Master01, vamos a iniciar la configuración de Kubernetes. Ejecutar el siguiente comando para inicializar el cluster de Kubernetes con la ayuda del archivo config2.yaml::
 
 
 	# cd /etc/kubernetes/configuration
