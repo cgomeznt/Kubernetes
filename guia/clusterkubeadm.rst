@@ -790,10 +790,7 @@ Con los siguientes comandos desde el Master01 (k8master01)::
 
 	# scp ca.crt ca.key sa.key sa.pub root@192.168.1.21:/etc/kubernetes/pki
 
-De igual forma que el Master01, crear el directorio /etc/kubernetes/configuration en los nodos master 2 y 3 (k8master02, k8master03) y copiar el archivo config2.yaml desde el Master01 (k8master01):
-
-
-Ejecutar los siguientes comandos en los nodos master 2 y 3 (k8master02, k8master03) para iniciar kubeadm::
+Ejecutar los siguientes comandos en los nodos master 2 y 3 (k8master02, k8master03) para iniciar el Kubernetes::
 
 	# kubeadm init --config=config2.yaml
 
