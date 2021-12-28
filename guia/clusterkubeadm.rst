@@ -859,3 +859,13 @@ Ahora hacemos un deploy de NGINX container, desde un nodo master::
 Luego de crear el deploy ahora se debe crear el servicio para que este disponible por la Red::
 
 	# kubectl create service nodeport nginx --tcp=80:80
+
+::
+
+	# kubectl get deploy
+
+	# kubectl get service
+
+Colocar la IP de cualquiera de los servidores del CLuster y el puerto es el que nos arroje en el "kubectl get service"
+
+	curl Ip:port
