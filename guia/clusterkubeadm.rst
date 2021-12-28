@@ -849,9 +849,13 @@ Etiquetar el “ROLE” de los workers ya que por defecto la etiqueta “ROLES�
 
 	# kubectl get nodes
 
-En realidad este fue el que ejecute::
+Deploy NGINX container en el cluster
+++++++++++++++++++++++++++++++++++++++++++++
 
-	# kubectl label --overwrite node k8worker03 kubernetes.io/role=worker
-	node/lcsqaappworkers03 labeled
+Ahora hacemos un deploy de NGINX container, desde un nodo master::
 
-	# kubectl get nodes
+	# kubectl create deployment nginx --image=nginx
+
+Luego de crear el deploy ahora se debe crear el servicio para que este disponible por la Red::
+
+	# kubectl create service nodeport nginx --tcp=80:80
