@@ -820,3 +820,38 @@ Si el comando anterior se ejecuta desde los nodos master 2 y 3 el resultado debe
 
 Unir los nodos workers al cluster con el comando JOIN
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Unir los nodos workers al cluster con el comando JOIN NOTA IMPORTANTE : Si el tiempo transcurrido entre la ejecución del comando “ kubeadm
+init –config=config.yaml ” el cual generó un token para ser usado con el comando
+
+“kubeadm join ...” es superior a 24 horas se debe generar un nuevo token ya que los tokens expiran a las 24 horas de haber sido generados.
+
+En el Master01::
+
+	# kubeadm token create --print-join-command
+
+
+Esto se ejecuta en todos los nodes workers::
+
+	# kubeadm join 192.168.1.20:6443 --token wfr0am.wp65pdoqwdul7ige \
+	--discovery-token-ca-cert-hash
+	sha256:50204506d189e72ad8391996c739a04c2088f7e9a528f0c5210f26f524d7b2ec
+
+Ejecutar el siguiente comando (en el nodo 1 master) para verificar la incorporación de los nodos workers al cluster::
+
+	# kubectl get nodes
+
+Etiquetar el “ROLE” de los workers ya que por defecto la etiqueta “ROLES” en los NO master es “<none>”::
+
+	# kubectl label nodes k8worker01 node-role.kubernetes.io/worker=worker
+	# kubectl label nodes k8worker02 node-role.kubernetes.io/worker=worker
+	# kubectl label nodes k8worker03 node-role.kubernetes.io/worker=worker
+
+	# kubectl get nodes
+
+En realidad este fue el que ejecute::
+
+	# kubectl label --overwrite node k8worker03 kubernetes.io/role=worker
+	node/lcsqaappworkers03 labeled
+
+	# kubectl get nodes
