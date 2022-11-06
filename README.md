@@ -7,5 +7,3 @@
 * [¿Qué es Kubernetes? - Primeros Pasos](guia/QueesKubernete.rst)
 * [Cluster Kubernetes con kubeadm en CentOS7](guia/clusterkubeadm.rst)
 * [Cluster Kubernetes de Baja](guia/clusterkubeadmbaja.rst)
-
-
