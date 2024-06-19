@@ -5,6 +5,13 @@ https://www.kubeclusters.com/docs/How-to-Deploy-a-Highly-Available-kubernetes-Cl
 
 https://dockerlabs.collabnix.com/kubernetes/beginners/Install-and-configure-a-multi-master-Kubernetes-cluster-with-kubeadm.html
 
+https://phoenixnap.com/kb/install-kubernetes-on-rocky-linux
+
+https://www.linuxtechi.com/install-kubernetes-on-rockylinux-almalinux/
+
+https://computingforgeeks.com/how-to-install-etcd-on-rhel-centos-rocky-almalinux/
+
+https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/configure-cgroup-driver/
 
 Kubernetes es un orquestador para contenedores de Docker. En otras palabras, Kubernetes es un software o herramienta de código abierto que se utiliza para organizar y administrar contenedores de Docker en clúster ambiente. Kubernetes también se conoce como k8s y fue desarrollado por Google y donado a "Cloud Native Computing foundation”
 
