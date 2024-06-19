@@ -612,10 +612,10 @@ Instalar y configurar ETCD (En todos los Master)
   etcdutl version: 3.5.2
   API version: 3.5
                      
-	# touch /etc/etcd.env
-	# export PRIVATE_IP=$(ip addr show eth0 | grep -Po 'inet \K[\d.]+') && export PEER_NAME=$(hostname)
-	# echo "PEER_NAME=${PEER_NAME}" >> /etc/etcd.env
-	# echo "PRIVATE_IP=${PRIVATE_IP}" >> /etc/etcd.env
+  # touch /etc/etcd.env
+  # export PRIVATE_IP=$(ip addr show eth0 | grep -Po 'inet \K[\d.]+') && export PEER_NAME=$(hostname)
+  # echo "PEER_NAME=${PEER_NAME}" >> /etc/etcd.env
+  # echo "PRIVATE_IP=${PRIVATE_IP}" >> /etc/etcd.env
 
 Configuramos el ETCD como un servicio::
 
@@ -781,7 +781,7 @@ Verificar la salud del cluster ETCD
 
 Con el siguiente comando::
 
-	# etcdctl endpoint health
+  # etcdctl endpoint health
   https://192.168.1.20:2379 is healthy: successfully committed proposal: took = 5.08282ms
   https://192.168.1.21:2379 is healthy: successfully committed proposal: took = 7.454684ms
   https://192.168.1.212:2379 is healthy: successfully committed proposal: took = 3.454214ms
@@ -791,7 +791,7 @@ Verificar los miembros del cluster ETCD
 
 Con el siguiente comando::
 
-	# etcdctl member list
+  # etcdctl member list
   cbac022a76f0f30, started, Lrkdevcrediappma02, https://192.168.1.20:2380, https://192.168.1.20:2379, false
   368ad2b7a4ad8bca, started, Lrkdevcrediappma03, https://192.168.1.21:2380, https://192.168.1.21:2379, false
   9214feb972f3793c, started, Lrkdevcrediappma01, https://192.168.1.22:2380, https://192.168.1.22:2379, false
@@ -805,9 +805,9 @@ Configuracion del Cluster con kubeadm (En todos los Master)
 
 Se comienza con el Master01 (k8master01). Crear el directorio /etc/kubernetes/configuration y en el mismo directorio el archivo config.yaml Revisar la versión de kubernetes y colocar la correspondiente en el archivo config.yaml::
 
-	# mkdir /etc/kubernetes/configuration && cd /etc/kubernetes/configuration
+  # mkdir /etc/kubernetes/configuration && cd /etc/kubernetes/configuration
 
-	# vi config.yaml
+  # vi config.yaml
 
   apiServer:
     certSANs:
@@ -898,7 +898,7 @@ Con los siguientes comandos desde el Master01 (k8master01)::
 		
 	# scp ca.crt ca.key sa.key sa.pub root@192.168.1.21:/etc/kubernetes/pki
 
-	# scp ca.crt ca.key sa.key sa.pub root@192.168.1.21:/etc/kubernetes/pki
+	# scp ca.crt ca.key sa.key sa.pub root@192.168.1.22:/etc/kubernetes/pki
 
 Ejecutar los siguientes comandos en los nodos master 2 y 3 (k8master02, k8master03) para iniciar el Kubernetes::
 
@@ -914,11 +914,11 @@ Verificar en los tres (3) nodos master los pods de kubernetes ejecutando el sigu
 Instalar la red de kubernetes “Flannel” (En el Master01)
 ++++++++++++++++++++++++++++++++++++
 
-En el nodo 1 master (k8master01) ejecutar la instalacion de **Flannel**, este es el comando original, pero NO me funciono::
+En el nodo 1 master (k8master01) ejecutar la instalacion de **Flannel**, este es el comando original, esto no me funciono en CentOS7, pero en Rocky Linux 9.4 si::
 
 	# kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 
-Utilice este otro comando y si me resulto::
+Utilice este otro comando y si me resulto en CentOS7, NO lo utilizamos en Rocky Linux 9.4 ::
 
 	# kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/2140ac876ef134e0ed5af15c65e414cf26827915/Documentation/kube-flannel.yml
 
