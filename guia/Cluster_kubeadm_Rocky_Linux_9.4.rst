@@ -112,7 +112,7 @@ Instalar NTP
 ++++++++++++++++
 ::
 
-	# yum install -y ntp
+	# dnf install -y ntp
 	# systemctl start ntpd
 	# systemctl enable ntpd
 
@@ -130,11 +130,11 @@ La mejor documentación es la oficial de Docker https://docs.docker.com/engine/i
 
 Esto es como instalar Docker::
 
-	# yum install -y yum-utils
+	# dnf install -y dnf-utils
 
-	# yum-config-manager --add-repo  https://download.docker.com/linux/centos/docker-ce.repo
+	# dnf-config-manager --add-repo  https://download.docker.com/linux/centos/docker-ce.repo
 
-	# yum install docker-ce docker-ce-cli containerd.io
+	# dnf install docker-ce docker-ce-cli containerd.io
 
 
 Cambiar el cgroupdrive al docker de init a systemd, tal como lo recomienda Kubernetes::
@@ -312,7 +312,7 @@ Instalar kubelet, kubeadm, kubectl
 ++++++++++++++++++++++++++++++++
 ::
 
-	# cat <<EOF > /etc/yum.repos.d/kubernetes.repo
+	# cat <<EOF > /etc/dnf.repos.d/kubernetes.repo
   [kubernetes]
   name=Kubernetes
   baseurl=https://pkgs.k8s.io/core:/stable:/v1.30/rpm/
