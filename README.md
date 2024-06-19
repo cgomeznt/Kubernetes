@@ -6,5 +6,5 @@
 * [Arquitectura](guia/3.Arquitectura.rst)
 * [¿Qué es Kubernetes? - Primeros Pasos](guia/QueesKubernete.rst)
 * [Cluster Kubernetes con kubeadm en CentOS7](guia/clusterkubeadm.rst)
-* [Cluster Kubernetes con kubeadm en Rocky Linux 9](guia/Create_Cluster_kubeadm_Rocky_Linux_9.4.rst)
+* [Cluster Kubernetes con kubeadm en Rocky Linux 9](guia/Cluster_kubeadm_Rocky_Linux_9.4.rst)
 * [Cluster Kubernetes de Baja](guia/clusterkubeadmbaja.rst)
