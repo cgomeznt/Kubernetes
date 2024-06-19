@@ -870,6 +870,38 @@ En el Master01, vamos a iniciar la configuración de Kubernetes. Ejecutar el sig
 
 	# kubeadm init --config=config2.yaml
 
+**NOTA** Segurramente luego de ejecutar el comando **kubeadm init --config=config2.yaml** te genere los siguientes errores::
+	
+	error execution phase preflight: [preflight] Some fatal errors occurred:
+	        [ERROR ImagePull]: failed to pull image k8s.gcr.io/kube-apiserver:v1.30.2: output: E0619 09:14:00.923777    3386 remote_image.go:180] "PullImage from image service failed" err="rpc error: code = NotFound desc = failed to pull and unpack image \"k8s.gcr.io/kube-apiserver:v1.30.2\": failed to resolve reference \"k8s.gcr.io/kube-apiserver:v1.30.2\": k8s.gcr.io/kube-apiserver:v1.30.2: not found" image="k8s.gcr.io/kube-apiserver:v1.30.2"
+	time="2024-06-19T09:14:00-04:00" level=fatal msg="pulling image: rpc error: code = NotFound desc = failed to pull and unpack image \"k8s.gcr.io/kube-apiserver:v1.30.2\": failed to resolve reference \"k8s.gcr.io/kube-apiserver:v1.30.2\": k8s.gcr.io/kube-apiserver:v1.30.2: not found"
+	, error: exit status 1
+	        [ERROR ImagePull]: failed to pull image k8s.gcr.io/kube-controller-manager:v1.30.2: output: E0619 09:14:02.240883    3414 remote_image.go:180] "PullImage from image service failed" err="rpc error: code = NotFound desc = failed to pull and unpack image \"k8s.gcr.io/kube-controller-manager:v1.30.2\": failed to resolve reference \"k8s.gcr.io/kube-controller-manager:v1.30.2\": k8s.gcr.io/kube-controller-manager:v1.30.2: not found" image="k8s.gcr.io/kube-controller-manager:v1.30.2"
+	time="2024-06-19T09:14:02-04:00" level=fatal msg="pulling image: rpc error: code = NotFound desc = failed to pull and unpack image \"k8s.gcr.io/kube-controller-manager:v1.30.2\": failed to resolve reference \"k8s.gcr.io/kube-controller-manager:v1.30.2\": k8s.gcr.io/kube-controller-manager:v1.30.2: not found"
+	, error: exit status 1
+	        [ERROR ImagePull]: failed to pull image k8s.gcr.io/kube-scheduler:v1.30.2: output: E0619 09:14:03.560591    3441 remote_image.go:180] "PullImage from image service failed" err="rpc error: code = NotFound desc = failed to pull and unpack image \"k8s.gcr.io/kube-scheduler:v1.30.2\": failed to resolve reference \"k8s.gcr.io/kube-scheduler:v1.30.2\": k8s.gcr.io/kube-scheduler:v1.30.2: not found" image="k8s.gcr.io/kube-scheduler:v1.30.2"
+	time="2024-06-19T09:14:03-04:00" level=fatal msg="pulling image: rpc error: code = NotFound desc = failed to pull and unpack image \"k8s.gcr.io/kube-scheduler:v1.30.2\": failed to resolve reference \"k8s.gcr.io/kube-scheduler:v1.30.2\": k8s.gcr.io/kube-scheduler:v1.30.2: not found"
+	, error: exit status 1
+	        [ERROR ImagePull]: failed to pull image k8s.gcr.io/kube-proxy:v1.30.2: output: E0619 09:14:04.849481    3468 remote_image.go:180] "PullImage from image service failed" err="rpc error: code = NotFound desc = failed to pull and unpack image \"k8s.gcr.io/kube-proxy:v1.30.2\": failed to resolve reference \"k8s.gcr.io/kube-proxy:v1.30.2\": k8s.gcr.io/kube-proxy:v1.30.2: not found" image="k8s.gcr.io/kube-proxy:v1.30.2"
+	time="2024-06-19T09:14:04-04:00" level=fatal msg="pulling image: rpc error: code = NotFound desc = failed to pull and unpack image \"k8s.gcr.io/kube-proxy:v1.30.2\": failed to resolve reference \"k8s.gcr.io/kube-proxy:v1.30.2\": k8s.gcr.io/kube-proxy:v1.30.2: not found"
+	, error: exit status 1
+	[preflight] If you know what you are doing, you can make a check non-fatal with `--ignore-preflight-errors=...`
+	To see the stack trace of this error execute with --v=5 or higher
+
+Tendrá que darle varias veces el siguiente comando para descargar las imagenes requeridas::
+
+	# kubeadm config images pull
+	[config/images] Pulled registry.k8s.io/kube-apiserver:v1.30.2
+	[config/images] Pulled registry.k8s.io/kube-controller-manager:v1.30.2
+	[config/images] Pulled registry.k8s.io/kube-scheduler:v1.30.2
+	[config/images] Pulled registry.k8s.io/kube-proxy:v1.30.2
+	[config/images] Pulled registry.k8s.io/coredns/coredns:v1.11.1
+	[config/images] Pulled registry.k8s.io/pause:3.9
+	[config/images] Pulled registry.k8s.io/etcd:3.5.12-0
+
+Y luego ejecutar nuevamente el comando::
+
+	# kubeadm init --config=config2.yaml
 
 Tomar nota del token del cluster
 ++++++++++++++++++++++++++++++++++++
