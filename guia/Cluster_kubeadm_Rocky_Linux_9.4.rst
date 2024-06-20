@@ -531,7 +531,7 @@ Este comando genera el archivo config.json en /etc/kubernetes/pki/etcd::
 
 En cada nodo de los Master vamos a ejecutar lo siguiente para que el archivo **config.json** quede con los valores correspondientes::
 
-	# export PRIVATE_IP=$(ip addr show ens160 | grep -Po 'inet \K[\d.]+') && export PEER_NAME=$(hostname)
+	# export PRIVATE_IP=$(ip addr show ens192 | grep -Po 'inet \K[\d.]+') && export PEER_NAME=$(hostname)
 	# sed -i '0,/CN/{s/example\.net/'"$PEER_NAME"'/}' /etc/kubernetes/pki/etcd/config.json
 	# sed -i 's/www\.example\.net/'"$PRIVATE_IP"'/' /etc/kubernetes/pki/etcd/config.json
 	# sed -i 's/example\.net/'"$PEER_NAME"'/' /etc/kubernetes/pki/etcd/config.json
@@ -613,7 +613,7 @@ Instalar y configurar ETCD (En todos los Master)
   API version: 3.5
                      
   # touch /etc/etcd.env
-  # export PRIVATE_IP=$(ip addr show eth0 | grep -Po 'inet \K[\d.]+') && export PEER_NAME=$(hostname)
+  # export PRIVATE_IP=$(ip addr show ens192 | grep -Po 'inet \K[\d.]+') && export PEER_NAME=$(hostname)
   # echo "PEER_NAME=${PEER_NAME}" >> /etc/etcd.env
   # echo "PRIVATE_IP=${PRIVATE_IP}" >> /etc/etcd.env
 
