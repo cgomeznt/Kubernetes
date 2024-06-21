@@ -179,3 +179,20 @@ Si queremos reiniciar los pods::
 	nginx-project-c9cd95999-dschd   1/1     Running   0          2s
 	nginx-project-c9cd95999-zfqfb   1/1     Running   0          2s
 
+Para depurar lo instalado
++++++++++++++++++++++++++++++++
+
+Borramos el service y el deploy::
+
+	# kubectl delete service nginx-project
+	service "nginx-project" deleted
+
+	# kubectl delete deploy nginx-project
+	deployment.apps "nginx-project" deleted
+	
+También podemos utilizar el archivo yaml::
+
+	# kubectl delete -f nginx.yaml
+	service "nginx-project" deleted
+	deployment.apps "nginx-project" deleted
+
