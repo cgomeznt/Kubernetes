@@ -9,3 +9,4 @@
 * [Cluster Kubernetes con kubeadm en Rocky Linux 9](guia/Cluster_kubeadm_Rocky_Linux_9.4.rst)
 * [Cluster Kubernetes de Baja](guia/clusterkubeadmbaja.rst)
 * [Kubernetes_NGINX_Deployment_usando_CLI_YAML](guia/Kubernetes_NGINX_Deployment_usando_CLI_YAML.rst)
+* [Kubernetes_TOMCAT_Deployment_usando_CLI_YAML](guia/Kubernetes_TOMCAT_Deployment_usando_CLI_YAML.rst)
