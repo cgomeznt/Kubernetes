@@ -179,6 +179,32 @@ Si queremos reiniciar los pods::
 	nginx-project-c9cd95999-dschd   1/1     Running   0          2s
 	nginx-project-c9cd95999-zfqfb   1/1     Running   0          2s
 
+Otra forma de consultar::
+
+	# kubectl exec nginx-project-bfb8b458b-vhhhc -- curl http://localhost:80
+	
+	  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+									 Dload  Upload   Total   Spent    Left  Speed
+	  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0<!DOCTYPE html>
+	<!--
+	To change this license header, choose License Headers in Project Properties.
+	To change this template file, choose Tools | Templates
+	and open the template in the editor.
+	-->
+	<html>
+		<head>
+			<title>SampleWebApp</title>
+			<meta charset="UTF-8">
+			<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		</head>
+		<body>
+			<h2>Welcome to xFusionCorp Industries!</h2>
+			<br>
+
+		</body>
+	</html>
+	100   471  100   471    0     0   153k      0 --:--:-- --:--:-- --:--:--  153k	
+
 Para depurar lo instalado
 +++++++++++++++++++++++++++++++
 
