@@ -130,9 +130,9 @@ La mejor documentación es la oficial de Docker https://docs.docker.com/engine/i
 
 Esto es como instalar Docker::
 
-	# dnf install -y dnf-utils
+	# dnf install -y yum-utils
 
-	# dnf-config-manager --add-repo  https://download.docker.com/linux/centos/docker-ce.repo
+	# dnf config-manager --add-repo  https://download.docker.com/linux/centos/docker-ce.repo
 
 	# dnf install docker-ce docker-ce-cli containerd.io
 
@@ -312,7 +312,7 @@ Instalar kubelet, kubeadm, kubectl
 ++++++++++++++++++++++++++++++++
 ::
 
-	# cat <<EOF > /etc/dnf.repos.d/kubernetes.repo
+	# cat <<\EOF > /etc/yum.repos.d/kubernetes.repo
   [kubernetes]
   name=Kubernetes
   baseurl=https://pkgs.k8s.io/core:/stable:/v1.30/rpm/
